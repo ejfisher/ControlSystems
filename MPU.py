@@ -26,11 +26,11 @@ GyCal=0
 GzCal=0
 
 def InitMPU():
-	bus.write_byte_data(Device_Address, DIV, 7)
-	bus.write_byte_data(Device_Address, PWR_M, 1)
-	bus.write_byte_data(Device_Address, CONFIG, 0)
-	bus.write_byte_data(Device_Address, GYRO_CONFIG, 24)
-	bus.write_byte_data(Device_Address, INT_EN, 1)
+	bus.write_byte_data(address, DIV, 7)
+	bus.write_byte_data(address, PWR_M, 1)
+	bus.write_byte_data(address, CONFIG, 0)
+	bus.write_byte_data(address, GYRO_CONFIG, 24)
+	bus.write_byte_data(address, INT_EN, 1)
 	time.sleep(1)
 
 

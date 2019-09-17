@@ -36,7 +36,7 @@ def InitMPU():
 
 
 def calibrate():
-	Print("Calibrate....")
+	print("Calibrate....")
 	global AxCal
 	global AyCal
 	global AzCal
@@ -119,7 +119,7 @@ def temp():
 	tempC=(tempRow / 340.0) + 36.53
 	tempC="%.2f" %tempC
 	print(tempC)
-	Print("Temp: ")
+	print("Temp: ")
 	Print(str(tempC))
 	time.sleep(.2)
 

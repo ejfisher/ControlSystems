@@ -118,7 +118,7 @@ def temp():
 	tempRow=readMPU(TEMP)
 	tempC=(tempRow / 340.0) + 36.53
 	tempC="%.2f" %tempC
-	print tempC
+	print(tempC)
 	Print("Temp: ")
 	Print(str(tempC))
 	time.sleep(.2)

@@ -120,7 +120,7 @@ def temp():
 	tempC="%.2f" %tempC
 	print(tempC)
 	print("Temp: ")
-	Print(str(tempC))
+	print(str(tempC))
 	time.sleep(.2)
 
 

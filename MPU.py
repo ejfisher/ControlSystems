@@ -54,9 +54,9 @@ def calibrate():
 	AyCal = y/16384.0
 	AzCal = z/16384.0
 
-	print AxCal
-	print AyCal
-	print AzCal
+	print(AxCal)
+	print(AyCal)
+	print(AzCal)
 
 	global GxCal
 	global GyCal
@@ -75,9 +75,9 @@ def calibrate():
 	GyCal = y/131.0
 	GzCal = z/131.0
 
-	print GxCal
-	print GyCal
-	print GzCal
+	print(GxCal)
+	print(GyCal)
+	print(GzCal)
  
  
 

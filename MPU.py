@@ -82,8 +82,8 @@ def calibrate():
  
 
 def readMPU(addr):
-	high = bus.read_byte_data(Device_Address, addr)
-	low = bus.read_byte_data(Device_Address, addr+1)
+	high = bus.read_byte_data(address, addr)
+	low = bus.read_byte_data(address, addr+1)
 	value = ((high << 8) | low)
 	if(value > 32768):
 		value = value - 65536

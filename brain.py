@@ -72,7 +72,7 @@ while True:
     if not btnA.value:
         # Send Button A
         display.fill(0)
-        MPU.gyro()
+        MPU.main()
         button_a_data = bytes("Button A!\r\n","utf-8")
         rfm69.send(button_a_data)
         display.text("Gyroscope", 35, 0, 1)
@@ -80,7 +80,7 @@ while True:
     elif not btnB.value:
         # Send Button B
         display.fill(0)
-        MPU.acc()
+        MPU.main()
         button_b_data = bytes("Button B!\r\n","utf-8")
         rfm69.send(button_b_data)
         display.text("Accelerometre", 35, 0, 1)
@@ -88,7 +88,7 @@ while True:
     elif not btnC.value:
         # Send Button C
         display.fill(0)
-        MPU.rotation()
+        MPU.main()
         button_c_data = bytes("Button C!\r\n","utf-8")
         rfm69.send(button_c_data)
         display.text("Rotation", 35, 0, 1)

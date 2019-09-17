@@ -125,7 +125,7 @@ def temp():
 	time.sleep(.2)
 
 
-def MPU():
+def main():
 	InitMPU()
 	calibrate()
 	InitMPU()

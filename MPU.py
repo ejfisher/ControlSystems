@@ -36,7 +36,6 @@ def InitMPU():
 
 
 def calibrate():
-	clear()
 	Print("Calibrate....")
 	global AxCal
 	global AyCal

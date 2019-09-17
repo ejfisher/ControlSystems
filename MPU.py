@@ -1,5 +1,6 @@
 import smbus
 import math
+import time
 
 #Register initialization
 PWR_M   = 0x6B

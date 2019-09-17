@@ -1,89 +1,143 @@
 import smbus
 import math
 
-power_mgmt1 = 0x6b
-power_mgmt2 = 0x6c
+#Register initialization
+PWR_M   = 0x6B
+DIV   = 0x19
+CONFIG       = 0x1A
+GYRO_CONFIG  = 0x1B
+INT_EN   = 0x38
+ACCEL_X = 0x3B
+ACCEL_Y = 0x3D
+ACCEL_Z = 0x3F
+GYRO_X  = 0x43
+GYRO_Y  = 0x45
+GYRO_Z  = 0x47
+TEMP = 0x41
+
 bus = smbus.SMBus(1) #maybe 1 if revision 2 boards
-address = 0x68	
+address = 0x68
+
+AxCal=0
+AyCal=0
+AzCal=0
+GxCal=0
+GyCal=0
+GzCal=0
+
+def InitMPU():
+	bus.write_byte_data(Device_Address, DIV, 7)
+	bus.write_byte_data(Device_Address, PWR_M, 1)
+	bus.write_byte_data(Device_Address, CONFIG, 0)
+	bus.write_byte_data(Device_Address, GYRO_CONFIG, 24)
+	bus.write_byte_data(Device_Address, INT_EN, 1)
+	time.sleep(1)
 
 
+def calibrate():
+	clear()
+	Print("Calibrate....")
+	global AxCal
+	global AyCal
+	global AzCal
+	x=0
+	y=0
+	z=0
+	for i in range(50):
+		x = x + readMPU(ACCEL_X)
+		y = y + readMPU(ACCEL_Y)
+		z = z + readMPU(ACCEL_Z)
+	x= x/50
+	y= y/50
+	z= z/50
+	AxCal = x/16384.0
+	AyCal = y/16384.0
+	AzCal = z/16384.0
 
-def read_byte(adr):
-	return bus.read_byte_data(address, adr)
+	print AxCal
+	print AyCal
+	print AzCal
 
-def read_word(adr):
-	high = bus.read_byte_data(address, adr)
-	low = bus.read_byte_data(address, adr+1)
-	val = (high << 8) + low
-	return val
+	global GxCal
+	global GyCal
+	global GzCal
+	x=0
+	y=0
+	z=0
+	for i in range(50):
+		x = x + readMPU(GYRO_X)
+		y = y + readMPU(GYRO_Y)
+		z = z + readMPU(GYRO_Z)
+	x= x/50
+	y= y/50
+	z= z/50
+	GxCal = x/131.0
+	GyCal = y/131.0
+	GzCal = z/131.0
 
-def read_word_2c(adr):
-	val = read_word(adr)
-	if (val >= 0x8000):
-		return -((65535-val) + 1)
-	else:
-		return val
+	print GxCal
+	print GyCal
+	print GzCal
+ 
+ 
 
-def dist(a,b):
-	return math.sqrt((a*a) + (b*b))
+def readMPU(addr):
+	high = bus.read_byte_data(Device_Address, addr)
+	low = bus.read_byte_data(Device_Address, addr+1)
+	value = ((high << 8) | low)
+	if(value > 32768):
+		value = value - 65536
+	return value
 
-def get_x_rotation(x,y,z):
-	radians = math.atan2(x, dist(y,z))
-	return -math.degrees(radians)
-
-def get_y_rotation(x,y,z):
-	radians = math.atan2(y, dist(x,z))
-	return math.degrees(radians)
-
-
-
-
+def accel():
+	x = readMPU(ACCEL_X)
+	y = readMPU(ACCEL_Y)
+	z = readMPU(ACCEL_Z)
+	Ax = (x/16384.0-AxCal)
+	Ay = (y/16384.0-AyCal)
+	Az = (z/16384.0-AzCal)
+	#print "X="+str(Ax)
+	print(Ax,Ay,Az)
+	time.sleep(.01)
+    
 def gyro():
+	global GxCal
+	global GyCal
+	global GzCal
+	x = readMPU(GYRO_X)
+	y = readMPU(GYRO_Y)
+	z = readMPU(GYRO_Z)
+	Gx = x/131.0 - GxCal
+	Gy = y/131.0 - GyCal
+	Gz = z/131.0 - GzCal
+	#print "X="+str(Gx)
+	print(Gx,Gy,Gz)
+	time.sleep(.01)
 
-	bus.write_byte_data(address, power_mgmt1, 0)
-	print("gyro data")
-	print("---------")
-	
-	gyroX = read_word_2c(0x43)
-	gyroY = read_word_2c(0x45)
-	gyroZ = read_word_2c(0x47)
-	
-	print ("Gyro X: ", gyroX, " scaled: ", (gyroX/131))
-	print ("Gyro X: ", gyroY, " scaled: ", (gyroY/131))
-	print ("Gyro X: ", gyroZ, " scaled: ", (gyroZ/131))
-	return(gyroX, gyroY, gyroZ)
-	
-def acc():
-	bus.write_byte_data(address, power_mgmt1, 0)
-	print()
-	print("accelerometer data")
-	print("------------------")
-	
-	accelX = read_word_2c(0x3b)
-	accelY = read_word_2c(0x3d)
-	accelZ = read_word_2c(0x3f)
-	
-	xScaled = accelX/16834.0
-	yScaled = accelY/16834.0
-	zScaled = accelZ/16834.0
-	
-	print("X: ", accelX, " scaled: ", xScaled)
-	print("Y: ", accelY, " scaled: ", yScaled)
-	print("Z: ", accelZ, " scaled: ", zScaled)
-	
-	return('{0: .3g}'.format(xScaled), '{0: .3g}'.format(yScaled), '{0: .3g}'.format(zScaled))
-	
-def rotation():
-	bus.write_byte_data(address, power_mgmt1, 0)
-	accelX = read_word_2c(0x3b)
-	accelY = read_word_2c(0x3d)
-	accelZ = read_word_2c(0x3f)
-	
-	xScaled = accelX/16834.0
-	yScaled = accelY/16834.0
-	zScaled = accelZ/16834.0
-	xRot = get_x_rotation(xScaled, yScaled, zScaled)
-	yRot = get_y_rotation(xScaled, yScaled, zScaled)
-	
+def temp():
+	tempRow=readMPU(TEMP)
+	tempC=(tempRow / 340.0) + 36.53
+	tempC="%.2f" %tempC
+	print tempC
+	Print("Temp: ")
+	Print(str(tempC))
+	time.sleep(.2)
 
-	return ('{0: .3g}'.format(xRot), '{0: .3g}'.format(yRot))
+
+def MPU():
+	InitMPU()
+	calibrate()
+	InitMPU()
+	for i in range(20):
+		temp()
+	time.sleep(1)
+	for i in range(30):
+		accel()
+	time.sleep(1)
+	for i in range(30):
+		gyro()
+
+
+
+
+
